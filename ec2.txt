@@ -1,2 +1,170 @@
 #!/bin/bash
 sh '--image-id ami-08c40ec9ead489470 --count 1 --instance-type t2.micro --key-name AWSCLI --security-group-ids sg-0b32ee0857e50fa7b --subnet-id subnet-063c19e82edf33133'
+
+
+______________________________________________
+$ aws ec2 run-instances --image-id ami-08c40ec9ead489470 --count 1 --instance-type t2.micro --key-name AWSCLI --security-group-ids sg-0b32ee0857e50fa7b --subnet-id subnet-063c19e82edf33133
+{
+    "Groups": [],
+    "Instances": [
+        {
+            "AmiLaunchIndex": 0,
+            "ImageId": "ami-08c40ec9ead489470",
+            "InstanceId": "i-0fe86afc8843f0cdc",
+            "InstanceType": "t2.micro",
+            "KeyName": "AWSCLI",
+            "LaunchTime": "2022-10-26T07:06:37+00:00",
+            "Monitoring": {
+                "State": "disabled"
+            },
+            "Placement": {
+                "AvailabilityZone": "us-east-1d",
+                "GroupName": "",
+                "Tenancy": "default"
+            },
+            "PrivateDnsName": "ip-172-31-5-196.ec2.internal",
+            "PrivateIpAddress": "172.31.5.196",
+            "ProductCodes": [],
+            "PublicDnsName": "",
+            "State": {
+                "Code": 0,
+                "Name": "pending"
+            },
+            "StateTransitionReason": "",
+            "SubnetId": "subnet-063c19e82edf33133",
+            "VpcId": "vpc-0868739332898427c",
+            "Architecture": "x86_64",
+            "BlockDeviceMappings": [],
+            "ClientToken": "670c3854-8f4f-4646-9762-0c2c77e93402",
+            "EbsOptimized": false,
+            "EnaSupport": true,
+            "Hypervisor": "xen",
+            "NetworkInterfaces": [
+                {
+                    "Attachment": {
+                        "AttachTime": "2022-10-26T07:06:37+00:00",
+                        "AttachmentId": "eni-attach-032634fe8a6064a04",
+                        "DeleteOnTermination": true,
+                        "DeviceIndex": 0,
+                        "Status": "attaching",
+                        "NetworkCardIndex": 0
+                    },
+                    "Description": "",
+                    "Groups": [
+                        {
+                            "GroupName": "launch-wizard-5",
+                            "GroupId": "sg-0b32ee0857e50fa7b"
+                        }
+                    ],
+                    "Ipv6Addresses": [],
+                    "MacAddress": "02:86:1a:05:cd:79",
+                    "NetworkInterfaceId": "eni-02a0784d31df5a70a",
+                    "OwnerId": "932679733168",
+                    "PrivateDnsName": "ip-172-31-5-196.ec2.internal",
+                    "PrivateIpAddress": "172.31.5.196",
+                    "PrivateIpAddresses": [
+                        {
+                            "Primary": true,
+                            "PrivateDnsName": "ip-172-31-5-196.ec2.internal",
+                            "PrivateIpAddress": "172.31.5.196"
+                        }
+                    ],
+                    "SourceDestCheck": true,
+                    "Status": "in-use",
+                    "SubnetId": "subnet-063c19e82edf33133",
+                    "VpcId": "vpc-0868739332898427c",
+                    "InterfaceType": "interface"
+                }
+            ],
+            "RootDeviceName": "/dev/sda1",
+            "RootDeviceType": "ebs",
+            "SecurityGroups": [
+                {
+                    "GroupName": "launch-wizard-5",
+                    "GroupId": "sg-0b32ee0857e50fa7b"
+                }
+            ],
+            "SourceDestCheck": true,
+            "StateReason": {
+                "Code": "pending",
+                "Message": "pending"
+            },
+            "VirtualizationType": "hvm",
+            "CpuOptions": {
+                "CoreCount": 1,
+                "ThreadsPerCore": 1
+            },
+            "CapacityReservationSpecification": {
+                "CapacityReservationPreference": "open"
+            },
+            "MetadataOptions": {
+                "State": "pending",
+                "HttpTokens": "optional",
+                "HttpPutResponseHopLimit": 1,
+                "HttpEndpoint": "enabled",
+                "HttpProtocolIpv6": "disabled",
+                "InstanceMetadataTags": "disabled"
+            },
+            "EnclaveOptions": {
+                "Enabled": false
+            },
+            "PrivateDnsNameOptions": {
+                "HostnameType": "ip-name",
+                "EnableResourceNameDnsARecord": false,
+                "EnableResourceNameDnsAAAARecord": false
+            },
+            "MaintenanceOptions": {
+                "AutoRecovery": "default"
+            }
+        }
+    ],
+    "OwnerId": "932679733168",
+    "ReservationId": "r-05f4b36598255649d"
+}
+
+
+
+pipeline {
+    agent any
+        environment {
+            AWS_REGION = 'us-east-1'
+            AWS_DEFAULT_REGION = 'us-east-1'
+        }
+    stages {
+        stage('EC2 Instance') {
+            steps {
+                sh 'aws ec2 run-instances --image-id ami-08c40ec9ead489470 --count 1 --instance-type t2.micro --key-name AWSCLI --security-group-ids sg-0b32ee0857e50fa7b --subnet-id subnet-063c19e82edf33133'
+            }
+        }
+    }
+}
+
+aws [options] <command> <subcommand> [<subcommand> ...] [parameters]
+
+pipeline {
+    agent any
+    environment {
+            AWS_REGION = 'us-east-1'
+            AWS_DEFAULT_REGION = 'us-east-1'
+        }
+    stages {
+        stage('Git') {
+            steps {
+                git url: 'https://github.com/shivapaladugula/jenkinsTest.git',
+                branch: 'main'
+            }
+        }
+        stage('Ec2 Instance Creation') {
+            steps {
+                sh 'chmod +x ec2.sh'
+                sh './ec2.sh'
+            }
+        }
+    }
+}
+
+#!/bin/bash
+aws ec2 run-instances --image-id ami-08c40ec9ead489470 --count 1 --instance-type t2.micro --key-name AWSCLI --security-group-ids sg-0b32ee0857e50fa7b --subnet-id subnet-063c19e82edf33133
+
+./<filename>.sh
+______________________________________________
